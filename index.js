@@ -106,6 +106,10 @@ function animate(){
 			player.velocity.y = 0
 		}
 	})
+
+	if(scrollOffset > 2000){
+		console.log('você venceu!')
+	}
 }
 
 animate();

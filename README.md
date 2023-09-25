@@ -4,7 +4,7 @@
 - [x] 4. Player movement
 - [x] 5. Plataforms
 - [x] 6. "Scroll" the background
-- [ ] 7. Win scenario
+- [x] 7. Win scenario
 - [ ] 8. Image plataforms
 - [ ] 9. Parallax scroll
 - [ ] 10. Death pits
