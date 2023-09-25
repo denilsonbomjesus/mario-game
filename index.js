@@ -1,3 +1,5 @@
+import plataform from './assets/plataform.png'
+
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
@@ -38,25 +40,31 @@ class Player {
 	}
 }
 
+// const plataform = document.querySelector('.plataforma')
+const image = new Image()
+image.src = plataform
+
 class Plataform {
-	constructor({ x, y }){
+	constructor({ x, y, image }){
 		this.position = {
 			x,
-			y
+			y,
+			image
 		}
 
 		this.width = 200
 		this.height = 20
+
+		this.image = image
 	}
 
 	draw(){
-		c.fillStyle = 'blue'
-		c.fillRect(this.position.x, this.position.y, this.width, this.height)
+		c.drawImage(this.position.x, this.position.y, this.image)
 	}
 }
 
 const player = new Player();
-const plataforms = [new Plataform({x: 200, y: 100}),new Plataform({x: 500, y: 200})]
+const plataforms = [new Plataform({x: 200, y: 100, image})]
 
 const keys = {
 	right: {
