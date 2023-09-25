@@ -3,7 +3,7 @@
 - [x] 3. Gravity
 - [x] 4. Player movement
 - [x] 5. Plataforms
-- [ ] 6. "Scroll" the background
+- [x] 6. "Scroll" the background
 - [ ] 7. Win scenario
 - [ ] 8. Image plataforms
 - [ ] 9. Parallax scroll

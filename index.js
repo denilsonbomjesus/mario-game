@@ -39,10 +39,10 @@ class Player {
 }
 
 class Plataform {
-	constructor(){
+	constructor({ x, y }){
 		this.position = {
-			x: 200,
-			y: 100
+			x,
+			y
 		}
 
 		this.width = 200
@@ -56,7 +56,7 @@ class Plataform {
 }
 
 const player = new Player();
-const plataform = new Plataform();
+const plataforms = [new Plataform({x: 200, y: 100}),new Plataform({x: 500, y: 200})]
 
 const keys = {
 	right: {
@@ -67,24 +67,45 @@ const keys = {
 	}
 }
 
+let scrollOffset = 0
+
 function animate(){
 	requestAnimationFrame(animate)
 	c.clearRect(0, 0, canvas.width, canvas.height)
 	player.update()
-	plataform.draw()
-
-	if(keys.right.pressed){
+	plataforms.forEach(plataform => {
+		plataform.draw()
+	})
+	
+	// fazer player se mover
+	if(keys.right.pressed && player.position.x < 400){
 		player.velocity.x = 5
-	} else if (keys.left.pressed) {
+	} else if (keys.left.pressed && player.position.x > 100) {
 		player.velocity.x = -5
 	} else {
 		player.velocity.x = 0
+
+		// fazer plataforma se mover junto com player
+		if(keys.right.pressed){
+			scrollOffset += 5
+			plataforms.forEach(plataform => {
+				plataform.position.x -= 5		
+			})
+			
+		} else if (keys.left.pressed) {
+			scrollOffset -= 5
+			plataforms.forEach(plataform => {
+				plataform.position.x += 5		
+			})
+		}
 	}
 
 	// detecção de colisão da plataforma
-	if(player.position.y + player.height <= plataform.position.y && player.position.y + player.height + player.velocity.y >= plataform.position.y && player.position.x + player.width >= plataform.position.x && player.position.x <= plataform.position.x + plataform.width) {
-		player.velocity.y = 0
-	}
+	plataforms.forEach(plataform => {
+		if(player.position.y + player.height <= plataform.position.y && player.position.y + player.height + player.velocity.y >= plataform.position.y && player.position.x + player.width >= plataform.position.x && player.position.x <= plataform.position.x + plataform.width) {
+			player.velocity.y = 0
+		}
+	})
 }
 
 animate();
