@@ -44,7 +44,29 @@ class Player {
 const image = new Image()
 image.src = './assets/platform.png'
 
+const imageBackground = new Image()
+imageBackground.src = './assets/background.png'
+
+const imageHills = new Image()
+imageHills.src = './assets/hills.png'
+
 class Plataform {
+	constructor({ x, y, image }){
+		this.position = {
+			x,
+			y
+		}
+		this.image = image
+		this.width = image.width
+		this.height = image.height
+	}
+
+	draw(){
+		c.drawImage(this.image, this.position.x, this.position.y)
+	}
+}
+
+class GenericObject {
 	constructor({ x, y, image }){
 		this.position = {
 			x,
@@ -62,8 +84,13 @@ class Plataform {
 
 const player = new Player();
 const plataforms = [
-	new Plataform({x: -1, y: 470, image}), 
-	new Plataform({x: image.width - 3, y: 470, image})
+	new Plataform({x: -1, y: 470, image: image}), 
+	new Plataform({x: image.width - 3, y: 470, image: image})
+]
+
+const genericObjects = [
+	new GenericObject({x: -1, y: -1, image: imageBackground}),
+	new GenericObject({x: -1, y: -1, image: imageHills})
 ]
 
 const keys = {
@@ -81,6 +108,10 @@ function animate(){
 	requestAnimationFrame(animate)
 	c.fillStyle = 'white'
 	c.fillRect(0, 0, canvas.width, canvas.height)
+
+	genericObjects.forEach( genericObject => {
+		genericObject.draw()
+	})
 
 	plataforms.forEach(plataform => {
 		plataform.draw()
@@ -101,11 +132,17 @@ function animate(){
 			plataforms.forEach(plataform => {
 				plataform.position.x -= 5		
 			})
+			genericObjects.forEach(genericObject => {
+				genericObject.position.x -= 3
+			})
 			
 		} else if (keys.left.pressed) {
 			scrollOffset -= 5
 			plataforms.forEach(plataform => {
 				plataform.position.x += 5		
+			})
+			genericObjects.forEach(genericObject => {
+				genericObject.position.x += 3
 			})
 		}
 	}

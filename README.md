@@ -6,7 +6,7 @@
 - [x] 6. "Scroll" the background
 - [x] 7. Win scenario
 - [x] 8. Image plataforms
-- [ ] 9. Parallax scroll
+- [X] 9. Parallax scroll
 - [ ] 10. Death pits
 - [ ] 11. Level creation
 - [ ] 12. Fine-tuning
