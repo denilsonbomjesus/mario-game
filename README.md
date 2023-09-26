@@ -7,6 +7,6 @@
 - [x] 7. Win scenario
 - [x] 8. Image plataforms
 - [X] 9. Parallax scroll
-- [ ] 10. Death pits
+- [x] 10. Death pits
 - [ ] 11. Level creation
 - [ ] 12. Fine-tuning

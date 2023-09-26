@@ -1,5 +1,3 @@
-//import plataform from './assets/plataform.png'
-
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
@@ -36,7 +34,6 @@ class Player {
 
 		if(this.position.y + this.height + this.velocity.y <= canvas.height)
 			this.velocity.y += gravity
-		else this.velocity.y = 0
 	}
 }
 
@@ -82,13 +79,14 @@ class GenericObject {
 	}
 }
 
-const player = new Player();
-const plataforms = [
+let player = new Player();
+let plataforms = [
 	new Plataform({x: -1, y: 470, image: image}), 
-	new Plataform({x: image.width - 3, y: 470, image: image})
+	new Plataform({x: image.width - 3, y: 470, image: image}),
+	new Plataform({x: image.width * 2 + 100, y: 470, image: image})
 ]
 
-const genericObjects = [
+let genericObjects = [
 	new GenericObject({x: -1, y: -1, image: imageBackground}),
 	new GenericObject({x: -1, y: -1, image: imageHills})
 ]
@@ -103,6 +101,23 @@ const keys = {
 }
 
 let scrollOffset = 0
+
+// inicialização
+function init() {
+	player = new Player();
+	plataforms = [
+		new Plataform({x: -1, y: 470, image: image}), 
+		new Plataform({x: image.width - 3, y: 470, image: image}),
+		new Plataform({x: image.width * 2 + 100, y: 470, image: image})
+	]
+
+	genericObjects = [
+		new GenericObject({x: -1, y: -1, image: imageBackground}),
+		new GenericObject({x: -1, y: -1, image: imageHills})
+	]
+
+	scrollOffset = 0
+}
 
 function animate(){
 	requestAnimationFrame(animate)
@@ -154,8 +169,14 @@ function animate(){
 		}
 	})
 
+	// condição de vitoria
 	if(scrollOffset > 2000){
 		console.log('você venceu!')
+	}
+
+	//condição de derrota
+	if(player.position.y > canvas.height){
+		init()
 	}
 }
 
@@ -179,7 +200,7 @@ addEventListener('keydown', ({ keyCode }) => {
 
 		case 87:
 			console.log('up')
-			player.velocity.y -= 20
+			player.velocity.y -= 5
 			break
 	} 
 })
