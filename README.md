@@ -9,4 +9,5 @@
 - [X] 9. Parallax scroll
 - [x] 10. Death pits
 - [x] 11. Level creation
-- [ ] 12. Fine-tuning
+- [x] 12. Fine-tuning
+- [ ] 13. Sprite creation
