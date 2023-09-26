@@ -8,6 +8,7 @@ const gravity = 0.5;
 
 class Player {
 	constructor() {
+		this.speed = 10
 		this.position = {
 			x: 100,
 			y: 100
@@ -37,15 +38,17 @@ class Player {
 	}
 }
 
-// const plataform = document.querySelector('.plataforma')
-const image = new Image()
-image.src = './assets/platform.png'
+const imagePlatform = new Image()
+imagePlatform.src = './assets/platform.png'
 
 const imageBackground = new Image()
 imageBackground.src = './assets/background.png'
 
 const imageHills = new Image()
 imageHills.src = './assets/hills.png'
+
+const imagePlatformSmallTall = new Image()
+imagePlatformSmallTall.src = './assets/platformSmallTall.png'
 
 class Plataform {
 	constructor({ x, y, image }){
@@ -80,16 +83,9 @@ class GenericObject {
 }
 
 let player = new Player();
-let plataforms = [
-	new Plataform({x: -1, y: 470, image: image}), 
-	new Plataform({x: image.width - 3, y: 470, image: image}),
-	new Plataform({x: image.width * 2 + 100, y: 470, image: image})
-]
+let plataforms = []
 
-let genericObjects = [
-	new GenericObject({x: -1, y: -1, image: imageBackground}),
-	new GenericObject({x: -1, y: -1, image: imageHills})
-]
+let genericObjects = []
 
 const keys = {
 	right: {
@@ -106,9 +102,13 @@ let scrollOffset = 0
 function init() {
 	player = new Player();
 	plataforms = [
-		new Plataform({x: -1, y: 470, image: image}), 
-		new Plataform({x: image.width - 3, y: 470, image: image}),
-		new Plataform({x: image.width * 2 + 100, y: 470, image: image})
+		new Plataform({x: imagePlatform.width * 4 + 300 - 2 + imagePlatform.width - imagePlatformSmallTall.width, y: 270, image: imagePlatformSmallTall}),
+		new Plataform({x: -1, y: 470, image: imagePlatform}), 
+		new Plataform({x: imagePlatform.width - 3, y: 470, image: imagePlatform}),
+		new Plataform({x: imagePlatform.width * 2 + 100, y: 470, image: imagePlatform}),
+		new Plataform({x: imagePlatform.width * 3 + 300, y: 470, image: imagePlatform}),
+		new Plataform({x: imagePlatform.width * 4 + 300 - 2, y: 470, image: imagePlatform}),
+		new Plataform({x: imagePlatform.width * 5 + 700 - 2, y: 470, image: imagePlatform}),
 	]
 
 	genericObjects = [
@@ -135,29 +135,29 @@ function animate(){
 	
 	// fazer player se mover
 	if(keys.right.pressed && player.position.x < 400){
-		player.velocity.x = 5
+		player.velocity.x = player.speed
 	} else if (keys.left.pressed && player.position.x > 100) {
-		player.velocity.x = -5
+		player.velocity.x = -player.speed
 	} else {
 		player.velocity.x = 0
 
 		// fazer plataforma se mover junto com player
 		if(keys.right.pressed){
-			scrollOffset += 5
+			scrollOffset += player.speed
 			plataforms.forEach(plataform => {
-				plataform.position.x -= 5		
+				plataform.position.x -= player.speed		
 			})
 			genericObjects.forEach(genericObject => {
-				genericObject.position.x -= 3
+				genericObject.position.x -= player.speed * 0.66
 			})
 			
 		} else if (keys.left.pressed) {
-			scrollOffset -= 5
+			scrollOffset -= player.speed
 			plataforms.forEach(plataform => {
-				plataform.position.x += 5		
+				plataform.position.x += player.speed		
 			})
 			genericObjects.forEach(genericObject => {
-				genericObject.position.x += 3
+				genericObject.position.x += player.speed * 0.66
 			})
 		}
 	}
@@ -170,7 +170,7 @@ function animate(){
 	})
 
 	// condição de vitoria
-	if(scrollOffset > 2000){
+	if(scrollOffset > imagePlatform.width * 5 + 300 - 2){
 		console.log('você venceu!')
 	}
 
@@ -180,6 +180,7 @@ function animate(){
 	}
 }
 
+init();
 animate();
 
 addEventListener('keydown', ({ keyCode }) => {
@@ -200,7 +201,7 @@ addEventListener('keydown', ({ keyCode }) => {
 
 		case 87:
 			console.log('up')
-			player.velocity.y -= 5
+			player.velocity.y -= 10
 			break
 	} 
 })
@@ -223,7 +224,6 @@ addEventListener('keyup', ({ keyCode }) => {
 
 		case 87:
 			console.log('up')
-			player.velocity.y -= 20
 			break
 	} 
 })
