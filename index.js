@@ -1,10 +1,10 @@
-import plataform from './assets/plataform.png'
+//import plataform from './assets/plataform.png'
 
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width = 1024;
+canvas.height = 576;
 
 const gravity = 0.5;
 
@@ -42,29 +42,29 @@ class Player {
 
 // const plataform = document.querySelector('.plataforma')
 const image = new Image()
-image.src = plataform
+image.src = './assets/platform.png'
 
 class Plataform {
 	constructor({ x, y, image }){
 		this.position = {
 			x,
-			y,
-			image
+			y
 		}
-
-		this.width = 200
-		this.height = 20
-
 		this.image = image
+		this.width = image.width
+		this.height = image.height
 	}
 
 	draw(){
-		c.drawImage(this.position.x, this.position.y, this.image)
+		c.drawImage(this.image, this.position.x, this.position.y)
 	}
 }
 
 const player = new Player();
-const plataforms = [new Plataform({x: 200, y: 100, image})]
+const plataforms = [
+	new Plataform({x: -1, y: 470, image}), 
+	new Plataform({x: image.width - 3, y: 470, image})
+]
 
 const keys = {
 	right: {
@@ -79,11 +79,13 @@ let scrollOffset = 0
 
 function animate(){
 	requestAnimationFrame(animate)
-	c.clearRect(0, 0, canvas.width, canvas.height)
-	player.update()
+	c.fillStyle = 'white'
+	c.fillRect(0, 0, canvas.width, canvas.height)
+
 	plataforms.forEach(plataform => {
 		plataform.draw()
 	})
+	player.update()
 	
 	// fazer player se mover
 	if(keys.right.pressed && player.position.x < 400){

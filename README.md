@@ -5,7 +5,7 @@
 - [x] 5. Plataforms
 - [x] 6. "Scroll" the background
 - [x] 7. Win scenario
-- [ ] 8. Image plataforms
+- [x] 8. Image plataforms
 - [ ] 9. Parallax scroll
 - [ ] 10. Death pits
 - [ ] 11. Level creation
