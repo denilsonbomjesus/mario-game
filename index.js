@@ -6,6 +6,18 @@ canvas.height = 576;
 
 const gravity = 0.5;
 
+const imageSpriteRunLeft = new Image()
+imageSpriteRunLeft.src = './assets/spriteRunLeft.png'
+
+const imageSpriteRunRight = new Image()
+imageSpriteRunRight.src = './assets/spriteRunRight.png'
+
+const imageSpriteStandLeft = new Image()
+imageSpriteStandLeft.src = './assets/spriteStandLeft.png'
+
+const imageSpriteStandRight = new Image()
+imageSpriteStandRight.src = './assets/spriteStandRight.png'
+
 class Player {
 	constructor() {
 		this.speed = 10
@@ -18,17 +30,55 @@ class Player {
 			y: 0
 		}
 
-		this.width = 30
-		this.height = 30
+		this.width = 66
+		this.height = 150
+
+		this.image = imageSpriteStandRight
+		this.frames = 0
+		this.sprites = {
+			stand: {
+				right: imageSpriteStandRight,
+				left: imageSpriteStandLeft,
+				cropWidth: 177,
+				width: 66
+			},
+			run: {
+				right: imageSpriteRunRight,
+				left: imageSpriteRunLeft,
+				cropWidth: 341,
+				width: 127.875
+			}
+		}
+		this.currentSprites = this.sprites.stand.right		
+		this.currentCropWidth = 177
 	}
 
 	draw() {
-		c.fillStyle = 'red'
-		c.fillRect(this.
-			position.x, this.position.y, this.width, this.height)
+		c.drawImage(
+			this.currentSprites,
+			this.currentCropWidth * this.frames,
+			0,
+			this.currentCropWidth,
+			400,
+			this.position.x, 
+			this.position.y, 
+			this.width, 
+			this.height
+			)
 	}
 
 	update() {
+		this.frames++
+		if(this.frames > 59 && 
+			(this.currentSprites === this.sprites.stand.right || 
+				this.currentSprites === this.sprites.stand.left)){
+			this.frames = 0
+		} else if (this.frames > 29 && 
+			(this.currentSprites === this.sprites.run.right || 
+				this.currentSprites === this.sprites.run.left)){
+			this.frames = 0
+		}
+
 		this.draw();
 		this.position.y += this.velocity.y;
 		this.position.x += this.velocity.x;
@@ -86,6 +136,7 @@ let player = new Player();
 let plataforms = []
 
 let genericObjects = []
+let lastKey
 
 const keys = {
 	right: {
@@ -169,6 +220,29 @@ function animate(){
 		}
 	})
 
+	// troca de sprites
+	if(keys.right.pressed && lastKey === 'right' && player.currentSprites !== player.sprites.run.right){
+		player.frames = 1
+		player.currentSprites = player.sprites.run.right
+		player.currentCropWidth = player.sprites.run.cropWidth
+		player.width = player.sprites.run.width
+	} else if(keys.left.pressed &&lastKey === 'left' && player.currentSprites !== player.sprites.run.left){
+		player.frames = 1
+		player.currentSprites = player.sprites.run.left
+		player.currentCropWidth = player.sprites.run.cropWidth
+		player.width = player.sprites.run.width
+	} else if(!keys.left.pressed &&lastKey === 'left' && player.currentSprites !== player.sprites.stand.left){
+		player.frames = 1
+		player.currentSprites = player.sprites.stand.left
+		player.currentCropWidth = player.sprites.stand.cropWidth
+		player.width = player.sprites.stand.width
+	} else if(!keys.right.pressed &&lastKey === 'right' && player.currentSprites !== player.sprites.stand.right){
+		player.frames = 1
+		player.currentSprites = player.sprites.stand.right
+		player.currentCropWidth = player.sprites.stand.cropWidth
+		player.width = player.sprites.stand.width
+	}
+
 	// condição de vitoria
 	if(scrollOffset > imagePlatform.width * 5 + 300 - 2){
 		console.log('você venceu!')
@@ -188,6 +262,7 @@ addEventListener('keydown', ({ keyCode }) => {
 		case 65:
 			console.log('left')
 			keys.left.pressed = true
+			lastKey = 'left'
 			break
 
 		case 83:
@@ -197,6 +272,7 @@ addEventListener('keydown', ({ keyCode }) => {
 		case 68:
 			console.log('right')
 			keys.right.pressed = true
+			lastKey = 'right'
 			break
 
 		case 87:

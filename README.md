@@ -10,4 +10,4 @@
 - [x] 10. Death pits
 - [x] 11. Level creation
 - [x] 12. Fine-tuning
-- [ ] 13. Sprite creation
+- [x] 13. Sprite creation
