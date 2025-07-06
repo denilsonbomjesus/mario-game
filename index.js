@@ -6,17 +6,38 @@ canvas.height = 576;
 
 const gravity = 0.5;
 
-const imageSpriteRunLeft = new Image()
-imageSpriteRunLeft.src = './assets/spriteRunLeft.png'
+// Todas as imagens do jogo
+const images = [
+    { name: 'spriteRunLeft', src: './assets/spriteRunLeft.png' },
+    { name: 'spriteRunRight', src: './assets/spriteRunRight.png' },
+    { name: 'spriteStandLeft', src: './assets/spriteStandLeft.png' },
+    { name: 'spriteStandRight', src: './assets/spriteStandRight.png' },
+    { name: 'platform', src: './assets/platform.png' },
+    { name: 'background', src: './assets/background.png' },
+    { name: 'hills', src: './assets/hills.png' },
+    { name: 'platformSmallTall', src: './assets/platformSmallTall.png' }
+];
 
-const imageSpriteRunRight = new Image()
-imageSpriteRunRight.src = './assets/spriteRunRight.png'
+const loadedImages = {};
+let imagesLoadedCount = 0;
 
-const imageSpriteStandLeft = new Image()
-imageSpriteStandLeft.src = './assets/spriteStandLeft.png'
+function loadImage(imageObj) {
+    const img = new Image();
+    img.src = imageObj.src;
+    img.onload = () => {
+        loadedImages[imageObj.name] = img;
+        imagesLoadedCount++;
+        if (imagesLoadedCount === images.length) {
+            // Todas as imagens foram carregadas, agora podemos iniciar o jogo
+            initializeGame();
+        }
+    };
+    img.onerror = () => {
+        console.error(`Falha ao carregar a imagem: ${imageObj.src}`);
+    };
+}
 
-const imageSpriteStandRight = new Image()
-imageSpriteStandRight.src = './assets/spriteStandRight.png'
+images.forEach(imageObj => loadImage(imageObj));
 
 class Player {
 	constructor() {
@@ -33,18 +54,18 @@ class Player {
 		this.width = 66
 		this.height = 150
 
-		this.image = imageSpriteStandRight
+		this.image = loadedImages.spriteStandRight
 		this.frames = 0
 		this.sprites = {
 			stand: {
-				right: imageSpriteStandRight,
-				left: imageSpriteStandLeft,
+				right: loadedImages.spriteStandRight,
+				left: loadedImages.spriteStandLeft,
 				cropWidth: 177,
 				width: 66
 			},
 			run: {
-				right: imageSpriteRunRight,
-				left: imageSpriteRunLeft,
+				right: loadedImages.spriteRunRight,
+				left: loadedImages.spriteRunLeft,
 				cropWidth: 341,
 				width: 127.875
 			}
@@ -87,18 +108,6 @@ class Player {
 			this.velocity.y += gravity
 	}
 }
-
-const imagePlatform = new Image()
-imagePlatform.src = './assets/platform.png'
-
-const imageBackground = new Image()
-imageBackground.src = './assets/background.png'
-
-const imageHills = new Image()
-imageHills.src = './assets/hills.png'
-
-const imagePlatformSmallTall = new Image()
-imagePlatformSmallTall.src = './assets/platformSmallTall.png'
 
 class Plataform {
 	constructor({ x, y, image }){
@@ -153,18 +162,18 @@ let scrollOffset = 0
 function init() {
 	player = new Player();
 	plataforms = [
-		new Plataform({x: imagePlatform.width * 4 + 300 - 2 + imagePlatform.width - imagePlatformSmallTall.width, y: 270, image: imagePlatformSmallTall}),
-		new Plataform({x: -1, y: 470, image: imagePlatform}), 
-		new Plataform({x: imagePlatform.width - 3, y: 470, image: imagePlatform}),
-		new Plataform({x: imagePlatform.width * 2 + 100, y: 470, image: imagePlatform}),
-		new Plataform({x: imagePlatform.width * 3 + 300, y: 470, image: imagePlatform}),
-		new Plataform({x: imagePlatform.width * 4 + 300 - 2, y: 470, image: imagePlatform}),
-		new Plataform({x: imagePlatform.width * 5 + 700 - 2, y: 470, image: imagePlatform}),
+		new Plataform({x: loadedImages.platform.width * 4 + 300 - 2 + loadedImages.platform.width - loadedImages.platformSmallTall.width, y: 270, image: loadedImages.platformSmallTall}),
+		new Plataform({x: -1, y: 470, image: loadedImages.platform}), 
+		new Plataform({x: loadedImages.platform.width - 3, y: 470, image: loadedImages.platform}),
+		new Plataform({x: loadedImages.platform.width * 2 + 100, y: 470, image: loadedImages.platform}),
+		new Plataform({x: loadedImages.platform.width * 3 + 300, y: 470, image: loadedImages.platform}),
+		new Plataform({x: loadedImages.platform.width * 4 + 300 - 2, y: 470, image: loadedImages.platform}),
+		new Plataform({x: loadedImages.platform.width * 5 + 700 - 2, y: 470, image: loadedImages.platform}),
 	]
 
 	genericObjects = [
-		new GenericObject({x: -1, y: -1, image: imageBackground}),
-		new GenericObject({x: -1, y: -1, image: imageHills})
+		new GenericObject({x: -1, y: -1, image: loadedImages.background}),
+		new GenericObject({x: -1, y: -1, image: loadedImages.hills})
 	]
 
 	scrollOffset = 0
@@ -244,7 +253,7 @@ function animate(){
 	}
 
 	// condição de vitoria
-	if(scrollOffset > imagePlatform.width * 5 + 300 - 2){
+	if(scrollOffset > loadedImages.platform.width * 5 + 300 - 2){
 		console.log('você venceu!')
 	}
 
@@ -254,28 +263,34 @@ function animate(){
 	}
 }
 
-init();
-animate();
+function initializeGame(){
+	init();
+	animate();
+}
 
 addEventListener('keydown', ({ keyCode }) => {
 	switch (keyCode) {
 		case 65:
+		case 37:
 			console.log('left')
 			keys.left.pressed = true
 			lastKey = 'left'
 			break
 
 		case 83:
+		case 40:
 			console.log('down')
 			break
 
 		case 68:
+		case 39:
 			console.log('right')
 			keys.right.pressed = true
 			lastKey = 'right'
 			break
 
 		case 87:
+		case 38:
 			console.log('up')
 			player.velocity.y -= 10
 			break
@@ -285,20 +300,24 @@ addEventListener('keydown', ({ keyCode }) => {
 addEventListener('keyup', ({ keyCode }) => {
 	switch (keyCode) {
 		case 65:
+		case 37:
 			console.log('left')
 			keys.left.pressed = false
 			break
 
 		case 83:
+		case 40:
 			console.log('down')
 			break
 
 		case 68:
+		case 39:
 			console.log('right')
  			keys.right.pressed = false
  			break
 
 		case 87:
+		case 38:
 			console.log('up')
 			break
 	} 
