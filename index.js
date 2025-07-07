@@ -158,22 +158,89 @@ const keys = {
 
 let scrollOffset = 0
 
+// lastPlatformX e lastPlatformY são a posição da ÚLTIMA plataforma gerada
+let lastPlatformX = 0
+let lastPlatformY = 470
+
+// definindo limites de gap precisos para pulos (considerando duplo pulo)
+const minGapWithinBlock = 100; // distância mínima entre plataformas dentro de um "bloco"
+const maxGapWithinBlock = 400; // distância máxima para pulo SIMPLES dentro de um "bloco"
+
+const maxDoubleJumpGap = 650;
+const chanceForDoubleJumpGap = 0.3; // 30% de chance de gerar um gap maior (para duplo pulo)
+
+function generateMorePlatforms() {
+	// determinar o ponto mais à direita que já tem plataforma
+	// se não houver plataformas, começar do lastPlatformX inicial
+	// se houver, pegar a posição X da última plataforma + sua largura
+	let currentRightmostX = 0;
+	if (plataforms.length > 0) {
+		// pegar a última plataforma no array e usar sua posição no mundo
+		currentRightmostX = plataforms[plataforms.length - 1].position.x + plataforms[plataforms.length - 1].width;
+	} else {
+		// se não há plataformas, usa o lastPlatformX inicial do init
+		currentRightmostX = lastPlatformX;
+	}
+
+	// a janela de geração é o que o jogador pode ver + uma margem à frente
+	// certificar que o lastPlatformX usado aqui já está na coordenada do mundo
+	const generationTargetX = scrollOffset + canvas.width + 1000; // gerar 1000px à frente da tela visível
+
+	// loop para gerar plataformas até que cubrir a área desejada
+	while (currentRightmostX < generationTargetX) {
+		const platformType = Math.random() < 0.3 ? 'platformSmallTall' : 'platform'
+		const image = loadedImages[platformType]
+
+		// altura com limite
+		let yChange = Math.random() < 0.5 ? (Math.random() < 0.5 ? -100 : 100) : 0
+		lastPlatformY += yChange
+		lastPlatformY = Math.min(470, Math.max(250, lastPlatformY))
+
+		let gap;
+		if (Math.random() < chanceForDoubleJumpGap) {
+			gap = Math.floor(Math.random() * (maxDoubleJumpGap - maxGapWithinBlock)) + maxGapWithinBlock + 50;
+		} else {
+			gap = Math.floor(Math.random() * (maxGapWithinBlock - minGapWithinBlock)) + minGapWithinBlock;
+		}
+
+		// a nova posição de X é baseada no final da plataforma anterior + o gap
+		const nextX = currentRightmostX + gap;
+
+		// adiciona a nova plataforma
+		plataforms.push(new Plataform({
+			x: nextX,
+			y: lastPlatformY,
+			image: image
+		}));
+
+		// atualiza o ponto mais à direita para a próxima iteração do loop
+		currentRightmostX = nextX + image.width;
+	}
+}
+
 // inicialização
 function init() {
 	player = new Player();
 	plataforms = [
-		new Plataform({x: loadedImages.platform.width * 4 + 300 - 2 + loadedImages.platform.width - loadedImages.platformSmallTall.width, y: 270, image: loadedImages.platformSmallTall}),
-		new Plataform({x: -1, y: 470, image: loadedImages.platform}), 
-		new Plataform({x: loadedImages.platform.width - 3, y: 470, image: loadedImages.platform}),
-		new Plataform({x: loadedImages.platform.width * 2 + 100, y: 470, image: loadedImages.platform}),
-		new Plataform({x: loadedImages.platform.width * 3 + 300, y: 470, image: loadedImages.platform}),
-		new Plataform({x: loadedImages.platform.width * 4 + 300 - 2, y: 470, image: loadedImages.platform}),
-		new Plataform({x: loadedImages.platform.width * 5 + 700 - 2, y: 470, image: loadedImages.platform}),
+		new Plataform({
+			x: 0,
+			y: 470,
+			image: loadedImages.platform
+		})
 	]
 
+	// lastPlatformX e lastPlatformY representam a última posição de geração no mundo
+	lastPlatformX = loadedImages.platform.width + 100; // inicia depois da primeira plataforma fixa
+	lastPlatformY = 470;
+
+	// a primeira chamada de generateMorePlatforms preenche a tela inicial
+	generateMorePlatforms();
+
 	genericObjects = [
-		new GenericObject({x: -1, y: -1, image: loadedImages.background}),
-		new GenericObject({x: -1, y: -1, image: loadedImages.hills})
+		new GenericObject({ x: 0, y: -1, image: loadedImages.background }),
+		new GenericObject({ x: loadedImages.background.width, y: -1, image: loadedImages.background }),
+		new GenericObject({ x: 0, y: -1, image: loadedImages.hills }),
+		new GenericObject({ x: loadedImages.hills.width, y: -1, image: loadedImages.hills })
 	]
 
 	scrollOffset = 0
@@ -186,6 +253,16 @@ function animate(){
 
 	genericObjects.forEach( genericObject => {
 		genericObject.draw()
+
+		if(genericObject.position.x + genericObject.width <= 0){
+			genericObject.position.x += genericObject.width * 2
+		}
+
+		c.drawImage(
+			genericObject.image,
+			genericObject.position.x + genericObject.width,
+			genericObject.position.y
+		)
 	})
 
 	plataforms.forEach(plataform => {
@@ -210,6 +287,9 @@ function animate(){
 			genericObjects.forEach(genericObject => {
 				genericObject.position.x -= player.speed * 0.66
 			})
+
+			// gerar mais plataformas conforme o scroll avança
+			generateMorePlatforms()
 			
 		} else if (keys.left.pressed && scrollOffset > 0) {
 			scrollOffset -= player.speed
@@ -252,12 +332,12 @@ function animate(){
 		player.width = player.sprites.stand.width
 	}
 
-	// condição de vitoria
-	if(scrollOffset > loadedImages.platform.width * 5 + 300 - 2){
-		console.log('você venceu!')
-	}
+	// condição de vitoria -> a implementar
+	// if(scrollOffset > loadedImages.platform.width * 5 + 300 - 2){
+	// 	console.log('você venceu!')
+	// }
 
-	//condição de derrota
+	// condição de derrota (cair do mapa)
 	if(player.position.y > canvas.height){
 		init()
 	}
@@ -270,27 +350,27 @@ function initializeGame(){
 
 addEventListener('keydown', ({ keyCode }) => {
 	switch (keyCode) {
-		case 65:
-		case 37:
+		case 65: // A
+		case 37: // Seta esquerda
 			console.log('left')
 			keys.left.pressed = true
 			lastKey = 'left'
 			break
 
-		case 83:
-		case 40:
+		case 83: // S
+		case 40: // Seta baixo
 			console.log('down')
 			break
 
-		case 68:
-		case 39:
+		case 68: // D
+		case 39: // Seta direita
 			console.log('right')
 			keys.right.pressed = true
 			lastKey = 'right'
 			break
 
-		case 87:
-		case 38:
+		case 87: // W
+		case 38: // Seta para cima
 			console.log('up')
 			player.velocity.y -= 10
 			break
