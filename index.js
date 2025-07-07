@@ -72,6 +72,9 @@ class Player {
 		}
 		this.currentSprites = this.sprites.stand.right		
 		this.currentCropWidth = 177
+
+		this.jumpsRemaining = 2;
+		this.maxJumps = 2;
 	}
 
 	draw() {
@@ -304,8 +307,12 @@ function animate(){
 
 	// detecção de colisão da plataforma
 	plataforms.forEach(plataform => {
-		if(player.position.y + player.height <= plataform.position.y && player.position.y + player.height + player.velocity.y >= plataform.position.y && player.position.x + player.width >= plataform.position.x && player.position.x <= plataform.position.x + plataform.width) {
+		if (player.position.y + player.height <= plataform.position.y && player.position.y + player.height + player.velocity.y >= plataform.position.y && player.position.x + player.width >= plataform.position.x && player.position.x <= plataform.position.x + plataform.width) {
+			
 			player.velocity.y = 0
+			if (player.jumpsRemaining < player.maxJumps) {
+				player.jumpsRemaining = player.maxJumps;
+			}
 		}
 	})
 
@@ -372,7 +379,10 @@ addEventListener('keydown', ({ keyCode }) => {
 		case 87: // W
 		case 38: // Seta para cima
 			console.log('up')
-			player.velocity.y -= 10
+			if (player.jumpsRemaining > 0) {
+				player.velocity.y -= 10
+				player.jumpsRemaining--;
+			}
 			break
 	} 
 })

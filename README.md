@@ -34,7 +34,7 @@ Esta versão foca na correção de bugs, melhorias na usabilidade e a introduç�
 ### Metas para a Próxima Versão:
 
 - [x] **1. Correção do Bug de Início:** Garantir que o jogo inicie corretamente, com todos os recursos (imagens, posições) carregados e renderizados antes do início da animação.
-- [ ] **2. Correção do Bug do Pulo:** Implementar uma lógica para que o jogador só possa pular quando estiver em contato com uma plataforma, evitando pulos "no ar" indefinidos.
+- [x] **2. Correção do Bug do Pulo:** Implementar uma lógica para que o jogador só possa pular quando estiver em contato com uma plataforma, evitando pulos "no ar" indefinidos.
 - [x] **3. Incremento da Navegação com Setas:** Adicionar suporte às setas direcionais do teclado (cima, baixo, esquerda, direita) como alternativa à navegação WASD.
 - [ ] **4. Geração Procedural de Plataformas:** Desenvolver um sistema que crie plataformas dinamicamente em tempo de execução, em vez de pré-definidas, permitindo uma variedade infinita de níveis.
     - [x] **Variação de Posição:** Randomização da distância e altura entre as plataformas.
